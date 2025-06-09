@@ -10,7 +10,12 @@ const urlSchema = new mongoose.Schema({
         type : String,
         required : true,
     },
-    visitHistory:[{timestamp : {type : Number}}]
+    visitHistory:[{timestamp : {type : Number}}],
+    createdBy:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user', // Assuming you have a user model
+        required: true, // Ensure that every URL is created by a user
+    },
 },
     {timestamps : true}
 );
