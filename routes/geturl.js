@@ -1,26 +1,32 @@
 const express = require('express');
-const {geturlmethod} = require('../controllers/geturl');
 const router = express.Router();
-const URL = require('../models/url');
 
-router.get('/',async (req,res) => {
-    if(!req.user){
-        return res.redirect('/login');
-    }
+const {geturlmethod} = require('../controllers/geturl');
+const URL = require('../models/url');
+const {restrictTo} = require('../middlewares/auth.js')
+
+router.get('/admin/urls',restrictTo(["ADMIN"]), async (req,res) => {
+    const allurls = await URL.find({});
+    return res.render('home',{
+        urls: allurls,
+    });
+
+})
+router.get('/',restrictTo(["NORMAL","ADMIN"]),async (req,res) => {
     const allurls = await URL.find({createdBy : req.user._id});
     return res.render('home',{
         urls: allurls,
     });
 });
+
 router.get('/signup',(req,res) => {
     return res.render('signup');
 });
-// /login -> login.ejs -> homepage. with that id....
-// ensure no one other than login can access homepage.
-// /home
 
 router.get('/login',(req,res) => {
     return res.render('login');
 });
-router.get('/:id',geturlmethod);
+
+router.get('/:id',restrictTo(["NORMAL","ADMIN"]),geturlmethod);
+
 module.exports = router;

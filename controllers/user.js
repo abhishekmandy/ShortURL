@@ -12,23 +12,23 @@ async function handleusersignup(req, res) {
     return res.render('home');
 }
 async function handleuserlogin(req, res) {
-    
     const {  email, password } = req.body;
 
     const usser = await user.findOne({
         email,
         password,
     });
-    
+
     if(!usser) {
         return res.render('login',{
             error: 'Invalid email or password',
         });
     }
-    // const sessionId = uuidv4();
+    
     const token = setUser( usser);
+    res.cookie('token',token);
     // req['authorization'] = token;
-    return res.json({token });
+    return res.redirect('/');
     // res.cookie('uid', token);
     // res.cookie('uid', token,{
     //     domain:'www.google.com', -> can make cookier for a particular domain only.
@@ -49,3 +49,4 @@ module.exports = {
     handleusersignup,
     handleuserlogin,
 };
+
